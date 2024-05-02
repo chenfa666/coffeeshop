@@ -256,13 +256,6 @@ if(isset($_POST['docsub1']))
               </div>
             </div>
       
-                
-      
-
-
-
-
-
 
       <div class="tab-pane fade" id="list-sta" role="tabpanel" aria-labelledby="list-home-list">
               
@@ -649,6 +642,46 @@ if(isset($_POST['docsub1']))
 </div>
    </div>
     <!-- Optional JavaScript -->
+    <!-- Including jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Sorting Script -->
+    <script>
+    $(document).ready(function(){
+      function sortTable(table, columnIndex, ascending) {
+        var rows = table.find('tbody tr').get();
+        rows.sort(function(a, b) {
+          var A = $(a).children('td').eq(columnIndex).text().toUpperCase();
+          var B = $(b).children('td').eq(columnIndex).text().toUpperCase();
+          if (ascending) {
+            if(A < B) return -1;
+            if(A > B) return 1;
+          } else {
+            if(A < B) return 1;
+            if(A > B) return -1;
+          }
+          return 0;
+        });
+        $.each(rows, function(index, row) {
+          table.children('tbody').append(row);
+        });
+      }
+
+      // Event listener for table headers
+      $('th').click(function(){
+        var table = $(this).closest('table');
+        var columnIndex = $(this).index();
+        var ascending = $(this).hasClass('asc');
+        table.find('th').removeClass('asc desc');
+        if (ascending) {
+          $(this).addClass('desc');
+        } else {
+          $(this).addClass('asc');
+        }
+        sortTable(table, columnIndex, !ascending);
+      });
+    });
+    </script>
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
