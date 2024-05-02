@@ -4,35 +4,27 @@ $con=mysqli_connect("localhost","root","","coffeeshop");
 
 include('newfunc.php');
 
-if(isset($_POST['docsub']))
-{
-  $doctor=$_POST['doctor'];
-  $dpassword=$_POST['dpassword'];
-  $demail=$_POST['demail'];
-  $spec=$_POST['special'];
-  $docFees=$_POST['docFees'];
-  $query="insert into doctb(username,password,email,spec,docFees)values('$doctor','$dpassword','$demail','$spec','$docFees')";
-  $result=mysqli_query($con,$query);
-  if($result)
-    {
-      echo "<script>alert('Staff added successfully!');</script>";
-  }
-}
+if (isset($_POST['salerp'])) {
+    $host = 'localhost';
+    $user = 'root';
+    $password = '';
+    $dbname = 'coffeeshop';
 
+    $conn = new mysqli($host, $user, $password, $dbname);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
+    $start_date = $_POST['start_date'];
+    $end_date = $_POST['end_date'];
 
-if(isset($_POST['docsub1']))
-{
-  $demail=$_POST['demail'];
-  $query="delete from doctb where email='$demail';";
-  $result=mysqli_query($con,$query);
-  if($result)
-    {
-      echo "<script>alert('Staff removed successfully!');</script>";
-  }
-  else{
-    echo "<script>alert('Unable to delete!');</script>";
-  }
+    $stmt = $conn->prepare("CALL GenerateSalesReport(?, ?)");
+    $stmt->bind_param("ss", $start_date, $end_date);
+    $stmt->execute();
+
+    // Redirect to another page after processing
+    header("Location: salesreport.php");
+    exit(); // Make sure to exit after redirecting
 }
 
 function sortIndicator($ascending) {
@@ -582,63 +574,15 @@ function sortIndicator($ascending) {
       </div>
 
      <div class="tab-pane fade" id="list-settings1" role="tabpanel" aria-labelledby="list-settings1-list">
-                <form class="form-group" method="post" action="">
+                <form class="form-group" method="post" action="salesreport.php">
                     <div class="row">
                         <div class="col-md-4"><label>Start Date:</label></div>
                         <div class="col-md-8"><input type="date" class="form-control" name="start_date" required></div><br><br>
                         <div class="col-md-4"><label>End Date:</label></div>
                         <div class="col-md-8"><input type="date" class="form-control" name="end_date" required></div><br><br>
                     </div>
-                    <input type="submit" name="salerp" value="Get Sales Report" class="btn btn-primary" onclick="return confirm('Do you really want to generate the report?');">
+                    <input type="submit" name="salerp" value="Get Sales Report" class="btn btn-primary" onclick="return confirm('Generating the report?');">
                 </form>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <?php
-            if (isset($_POST['salerp'])) {
-                $host = 'localhost';
-                $user = 'root';
-                $password = '';
-                $dbname = 'coffeeshop';
-
-                $conn = new mysqli($host, $user, $password, $dbname);
-                if ($conn->connect_error) {
-                    die("Connection failed: " . $conn->connect_error);
-                }
-
-                $start_date = $_POST['start_date'];
-                $end_date = $_POST['end_date'];
-
-                $stmt = $conn->prepare("CALL GenerateSalesReport(?, ?)");
-                $stmt->bind_param("ss", $start_date, $end_date);
-                $stmt->execute();
-
-                do {
-                    if ($result = $stmt->get_result()) {
-                        echo "<table class='table'>";
-                        echo "<thead><tr>";
-                        foreach ($result->fetch_fields() as $field) {
-                            echo "<th>" . htmlspecialchars($field->name) . "</th>";
-                        }
-                        echo "</tr></thead><tbody>";
-
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<tr>";
-                            foreach ($row as $value) {
-                                echo "<td>" . htmlspecialchars($value) . "</td>";
-                            }
-                            echo "</tr>";
-                        }
-                        echo "</tbody></table>";
-                        $result->free();
-                    }
-                } while ($stmt->more_results() && $stmt->next_result());
-
-                $stmt->close();
-                $conn->close();
-            }
-            ?>
-        </div>
         </div>
     </div>
 </div>
