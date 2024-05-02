@@ -4,28 +4,33 @@ $con=mysqli_connect("localhost","root","","coffeeshop");
 
 include('newfunc.php');
 
-if (isset($_POST['salerp'])) {
-    $host = 'localhost';
-    $user = 'root';
-    $password = '';
-    $dbname = 'coffeeshop';
+// Check for post data
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $staff_id = $_POST['staff_id'];
+    $first_name = $_POST['first_name'];
+    $last_name = $_POST['last_name'];
+    $birth_date = $_POST['birth_date'];
+    $sex = $_POST['sex'];
+    $started_date = $_POST['started_date'];
+    $new_salary = $_POST['new_salary'];
 
-    $conn = new mysqli($host, $user, $password, $dbname);
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+    // Prepare SQL statement to execute procedure
+    $stmt = $con->prepare("CALL AddOrUpdateStaff(?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssssd", $staff_id, $first_name, $last_name, $birth_date, $sex, $started_date, $new_salary);
+
+    // Execute the procedure
+    if ($stmt->execute()) {
+        // If the update was successful, output JavaScript to display a popup
+        echo "<script>alert('Staff information has been successfully updated.');</script>";
+    } else {
+        // If there was an error, output JavaScript to display a popup
+        echo "<script>alert('Error updating staff information.');</script>";
     }
 
-    $start_date = $_POST['start_date'];
-    $end_date = $_POST['end_date'];
-
-    $stmt = $conn->prepare("CALL GenerateSalesReport(?, ?)");
-    $stmt->bind_param("ss", $start_date, $end_date);
-    $stmt->execute();
-
-    // Redirect to another page after processing
-    header("Location: salesreport.php");
-    exit(); // Make sure to exit after redirecting
+    // Close statement
+    $stmt->close();
 }
+
 
 function sortIndicator($ascending) {
     if ($ascending) {
@@ -53,7 +58,7 @@ function sortIndicator($ascending) {
       <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <a class="navbar-brand" href="#"><i class="fa fa-user-plus" aria-hidden="true"></i> Maid Coffeeshop </a>
+  <a class="navbar-brand" href="#"><i class="fa fa-coffee" aria-hidden="true"></i> Maid Coffeeshop </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -139,7 +144,6 @@ function sortIndicator($ascending) {
       <a class="list-group-item list-group-item-action" href="#list-ord" id="list-ord-list"  role="tab" data-toggle="list" aria-controls="home">Order Details</a>
       <a class="list-group-item list-group-item-action" href="#list-settings" id="list-adoc-list"  role="tab" data-toggle="list" aria-controls="home">Add Staff</a>
       <a class="list-group-item list-group-item-action" href="#list-settings1" id="list-srep-list"  role="tab" data-toggle="list" aria-controls="home">Generate Sales Report</a>
-      <a class="list-group-item list-group-item-action" href="#list-mes" id="list-mes-list"  role="tab" data-toggle="list" aria-controls="home">Queries</a>
 
     </div><br>
   </div>
@@ -222,7 +226,7 @@ function sortIndicator($ascending) {
                   <div class="panel panel-white no-radius text-center">
                     <div class="panel-body" >
                       <span class="fa-stack fa-2x"> <i class="fa fa-square fa-stack-2x", style="color: pink;"></i> <i class="fa fa-plus fa-stack-1x fa-inverse"></i> </span>
-                      <h4 class="StepTitle" style="margin-top: 5%;">Manage Staffs</h4>
+                      <h4 class="StepTitle" style="margin-top: 5%;">Manage Coffeeshop</h4>
                     
                       <p class="cl-effect-1">
                         <a href="#app-hist" onclick="clickDiv('#list-adoc-list')">Add Staff</a>
@@ -475,7 +479,7 @@ function sortIndicator($ascending) {
          <div class="col-md-8">
       <form class="form-group" action="ordsearch.php" method="post">
         <div class="row">
-        <div class="col-md-10"><input type="text" name="app_contact" placeholder="Enter Contact" class = "form-control"></div>
+        <div class="col-md-10"><input type="text" name="Receipt_ID" placeholder="Enter Receipt ID" class = "form-control"></div>
         <div class="col-md-2"><input type="submit" name="app_search_submit" class="btn btn-primary" value="Search"></div></div>
       </form>
     </div>
@@ -483,95 +487,70 @@ function sortIndicator($ascending) {
               <table class="table table-hover">
                 <thead>
                   <tr>
-                  <th scope="col">Order ID<span class="indicator"></span></th><span class="indicator"></span></th>
-                  <th scope="col">Customer ID<span class="indicator"></span></th><span class="indicator"></span></th>
-                    <th scope="col">First Name<span class="indicator"></span></th><span class="indicator"></span></th>
-                    <th scope="col">Last Name<span class="indicator"></span></th><span class="indicator"></span></th>
-                    <th scope="col">Gender<span class="indicator"></span></th><span class="indicator"></span></th>
-                    <th scope="col">Email<span class="indicator"></span></th><span class="indicator"></span></th>
-                    <th scope="col">Contact<span class="indicator"></span></th><span class="indicator"></span></th>
-                    <th scope="col">Staff Name<span class="indicator"></span></th><span class="indicator"></span></th>
-                    <th scope="col">Consultancy Fees<span class="indicator"></span></th><span class="indicator"></span></th>
-                    <th scope="col">Appointment Date<span class="indicator"></span></th><span class="indicator"></span></th>
-                    <th scope="col">Appointment Time<span class="indicator"></span></th><span class="indicator"></span></th>
-                    <th scope="col">Appointment Status<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Receipt ID<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Order Code<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">TotalPrice<span class="indicator"></span></th><span class="indicator"></span></th>
                   </tr>
                 </thead>
                 <tbody>
                   <?php 
 
-                    $con=mysqli_connect("localhost","root","","myhmsdb");
+                    $con=mysqli_connect("localhost","root","","coffeeshop");
                     global $con;
 
-                    $query = "select * from appointmenttb;";
+                    $query = "select * from drink_order;";
                     $result = mysqli_query($con,$query);
                     while ($row = mysqli_fetch_array($result)){
-                  ?>
-                      <tr>
-                        <td><?php echo $row['ID'];?></td>
-                        <td><?php echo $row['pid'];?></td>
-                        <td><?php echo $row['fname'];?></td>
-                        <td><?php echo $row['lname'];?></td>
-                        <td><?php echo $row['gender'];?></td>
-                        <td><?php echo $row['email'];?></td>
-                        <td><?php echo $row['contact'];?></td>
-                        <td><?php echo $row['doctor'];?></td>
-                        <td><?php echo $row['docFees'];?></td>
-                        <td><?php echo $row['appdate'];?></td>
-                        <td><?php echo $row['apptime'];?></td>
-                        <td>
-                    <?php if(($row['userStatus']==1) && ($row['doctorStatus']==1))  
-                    {
-                      echo "Active";
-                    }
-                    if(($row['userStatus']==0) && ($row['doctorStatus']==1))  
-                    {
-                      echo "Cancelled by Patient";
-                    }
+                  
+                      $receiptid = $row['ReceiptID'];
+                      $ordercode = $row['OrderCode'];
+                      $totalprice = $row['TotalPrice'];
+                
+                      echo "<tr>
+                        <td>$receiptid</td>
+                        <td>$ordercode</td>
+                        <td>$totalprice</td>
 
-                    if(($row['userStatus']==1) && ($row['doctorStatus']==0))  
-                    {
-                      echo "Cancelled by Doctor";
+                      </tr>";
                     }
-                        ?></td>
-                      </tr>
-                    <?php } ?>
+                  ?>
                 </tbody>
               </table>
         <br>
       </div>
+    
 
 <div class="tab-pane fade" id="list-messages" role="tabpanel" aria-labelledby="list-messages-list">...</div>
 
-      <div class="tab-pane fade" id="list-settings" role="tabpanel" aria-labelledby="list-settings-list">
+    <div class="tab-pane fade" id="list-settings" role="tabpanel" aria-labelledby="list-settings-list">
         <form class="form-group" method="post" action="admin-panel1.php">
-          <div class="row">
-                  <div class="col-md-4"><label>Staff Name:</label></div>
-                  <div class="col-md-8"><input type="text" class="form-control" name="doctor" onkeydown="return alphaOnly(event);" required></div><br><br>
-                  <div class="col-md-4"><label>Specialization:</label></div>
-                  <div class="col-md-8">
-                   <select name="special" class="form-control" id="special" required="required">
-                      <option value="head" name="spec" disabled selected>Select Specialization</option>
-                      <option value="General" name="spec">General</option>
-                      <option value="Cardiologist" name="spec">Cardiologist</option>
-                      <option value="Neurologist" name="spec">Neurologist</option>
-                      <option value="Pediatrician" name="spec">Pediatrician</option>
+            <div class="row">
+                <div class="col-md-4"><label>Staff ID:</label></div>
+                <div class="col-md-8"><input type="text" class="form-control" name="staff_id" required pattern="S.*" title="Staff ID must start with 'S'"></div><br><br>
+                <div class="col-md-4"><label>First Name:</label></div>
+                <div class="col-md-8"><input type="text" class="form-control" name="first_name" maxlength="10" required></div><br><br>
+                <div class="col-md-4"><label>Last Name:</label></div>
+                <div class="col-md-8"><input type="text" class="form-control" name="last_name" maxlength="10" required></div><br><br>
+                <div class="col-md-4"><label>Birth Date:</label></div>
+                <div class="col-md-8"><input type="date" class="form-control" name="birth_date" required></div><br><br>
+                <div class="col-md-4"><label>Gender:</label></div>
+                <div class="col-md-8">
+                    <select class="form-control" name="sex" required>
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
                     </select>
-                    </div><br><br>
-                  <div class="col-md-4"><label>Email ID:</label></div>
-                  <div class="col-md-8"><input type="email"  class="form-control" name="demail" required></div><br><br>
-                  <div class="col-md-4"><label>Password:</label></div>
-                  <div class="col-md-8"><input type="password" class="form-control"  onkeyup='check();' name="dpassword" id="dpassword"  required></div><br><br>
-                  <div class="col-md-4"><label>Confirm Password:</label></div>
-                  <div class="col-md-8"  id='cpass'><input type="password" class="form-control" onkeyup='check();' name="cdpassword" id="cdpassword" required>&nbsp &nbsp<span id='message'></span> </div><br><br>
-                   
-                  
-                  <div class="col-md-4"><label>Consultancy Fees:</label></div>
-                  <div class="col-md-8"><input type="text" class="form-control"  name="docFees" required></div><br><br>
-                </div>
-          <input type="submit" name="docsub" value="Add Staff" class="btn btn-primary">
+                </div><br><br>
+                <div class="col-md-4"><label>Start Date:</label></div>
+                <div class="col-md-8"><input type="date" class="form-control" name="started_date" required></div><br><br>
+                <div class="col-md-4"><label>Salary:</label></div>
+                <div class="col-md-8"><input type="number" step="0.01" class="form-control" name="new_salary" required></div><br><br>
+            </div>
+            <input type="submit" name="submit" value="Add or Update Staff" class="btn btn-primary">
         </form>
-      </div>
+    </div>
+
 
      <div class="tab-pane fade" id="list-settings1" role="tabpanel" aria-labelledby="list-settings1-list">
                 <form class="form-group" method="post" action="salesreport.php">
