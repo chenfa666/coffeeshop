@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php 
-$con=mysqli_connect("localhost","root","","myhmsdb");
+$con=mysqli_connect("localhost","root","","coffeeshop");
 
 include('newfunc.php');
 
@@ -20,6 +20,7 @@ if(isset($_POST['docsub']))
 }
 
 
+
 if(isset($_POST['docsub1']))
 {
   $demail=$_POST['demail'];
@@ -34,6 +35,13 @@ if(isset($_POST['docsub1']))
   }
 }
 
+function sortIndicator($ascending) {
+    if ($ascending) {
+        return '<span style="color: #90D26D;">&#9650;</span>';
+    } else {
+        return '<span style="color: #FF71CD;">&#9660;</span>';
+    }
+}
 
 ?>
 <html lang="en">
@@ -138,7 +146,7 @@ if(isset($_POST['docsub1']))
       <a class="list-group-item list-group-item-action" href="#list-mem" id="list-mem-list"  role="tab" data-toggle="list" aria-controls="home">Member List</a>
       <a class="list-group-item list-group-item-action" href="#list-ord" id="list-ord-list"  role="tab" data-toggle="list" aria-controls="home">Order Details</a>
       <a class="list-group-item list-group-item-action" href="#list-settings" id="list-adoc-list"  role="tab" data-toggle="list" aria-controls="home">Add Staff</a>
-      <a class="list-group-item list-group-item-action" href="#list-settings1" id="list-ddoc-list"  role="tab" data-toggle="list" aria-controls="home">Delete Staff</a>
+      <a class="list-group-item list-group-item-action" href="#list-settings1" id="list-srep-list"  role="tab" data-toggle="list" aria-controls="home">Generate Sales Report</a>
       <a class="list-group-item list-group-item-action" href="#list-mes" id="list-mes-list"  role="tab" data-toggle="list" aria-controls="home">Queries</a>
 
     </div><br>
@@ -227,8 +235,8 @@ if(isset($_POST['docsub1']))
                       <p class="cl-effect-1">
                         <a href="#app-hist" onclick="clickDiv('#list-adoc-list')">Add Staff</a>
                         &nbsp|
-                        <a href="#app-hist" onclick="clickDiv('#list-ddoc-list')">
-                          Delete Staff
+                        <a href="#app-hist" onclick="clickDiv('#list-srep-list')">
+                          Generate Sales Report
                         </a>
                       </p>
                     </div>
@@ -258,29 +266,28 @@ if(isset($_POST['docsub1']))
       
 
       <div class="tab-pane fade" id="list-sta" role="tabpanel" aria-labelledby="list-home-list">
-              
-
-              <div class="col-md-8">
-      <form class="form-group" action="staffsearch.php" method="post">
-        <div class="row">
-        <div class="col-md-10"><input type="text" name="staff_id" placeholder="Enter Staff ID" class = "form-control"></div>
-        <div class="col-md-2"><input type="submit" name="staff_search_submit" class="btn btn-primary" value="Search"></div></div>
-      </form>
+    <div class="col-md-8">
+        <form class="form-group" action="staffsearch.php" method="post">
+            <div class="row">
+                <div class="col-md-10"><input type="text" name="staff_id" placeholder="Enter Staff ID" class="form-control"></div>
+                <div class="col-md-2"><input type="submit" name="staff_search_submit" class="btn btn-primary" value="Search"></div>
+            </div>
+        </form>
     </div>
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th scope="col">StaffID</th>
-                    <th scope="col">Firstname</th>
-                    <th scope="col">Lastname</th>
-                    <th scope="col">BirthDate</th>
-                    <th scope="col">Sex</th>
-                    <th scope="col">StartedDate</th>
-                    <th scope="col">CurrentSalary</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php 
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">StaffID <span class="indicator"></span></th>
+                <th scope="col">Firstname <span class="indicator"></span></th>
+                <th scope="col">Lastname <span class="indicator"></span></th>
+                <th scope="col">BirthDate <span class="indicator"></span></th>
+                <th scope="col">Sex <span class="indicator"></span></th>
+                <th scope="col">StartedDate <span class="indicator"></span></th>
+                <th scope="col">CurrentSalary <span class="indicator"></span></th>
+            </tr>
+        </thead>
+        <tbody>
+             <?php 
                     $con=mysqli_connect("localhost","root","","coffeeshop");
                     global $con;
                     $query = "select * from staff";
@@ -305,10 +312,10 @@ if(isset($_POST['docsub1']))
                     }
 
                   ?>
-                </tbody>
-              </table>
-        <br>
-      </div>
+        </tbody>
+    </table>
+    <br>
+</div>
 
        <div class="tab-pane fade" id="list-man" role="tabpanel" aria-labelledby="list-man-list">
               
@@ -316,21 +323,21 @@ if(isset($_POST['docsub1']))
               <div class="col-md-8">
       <form class="form-group" action="managersearch.php" method="post">
         <div class="row">
-        <div class="col-md-10"><input type="text" name="manager_id" placeholder="Enter Manager ID" class = "form-control"></div>
-        <div class="col-md-2"><input type="submit" name="manager_search_submit" class="btn btn-primary" value="Search"></div></div>
+          <div class="col-md-10"><input type="text" name="manager_id" placeholder="Enter Manager ID" class = "form-control"></div>
+          <div class="col-md-2"><input type="submit" name="manager_search_submit" class="btn btn-primary" value="Search"></div></div>
       </form>
     </div>
               <table class="table table-hover">
                 <thead>
                   <tr>
-                    <th scope="col">ManagerID</th>
-                    <th scope="col">Firstname</th>
-                    <th scope="col">Lastname</th>
-                    <th scope="col">BirthDate</th>
-                    <th scope="col">Sex</th>
-                    <th scope="col">StartedDate</th>
-                    <th scope="col">CurrentSalary</th>
-                    <th scope="col">LoginPassword</th>
+                    <th scope="col">ManagerID<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Firstname<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Lastname<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">BirthDate<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Sex<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">StartedDate<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">CurrentSalary<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">LoginPassword<span class="indicator"></span></th><span class="indicator"></span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -380,13 +387,13 @@ if(isset($_POST['docsub1']))
               <table class="table table-hover">
                 <thead>
                   <tr>
-                    <th scope="col">MemberID</th>
-                    <th scope="col">Wifi Password</th>
-                    <th scope="col">Phone</th>
-                    <th scope="col">BirthDate</th>
-                    <th scope="col">Full Name</th>
-                    <th scope="col">Membership Point</th>
-                    <th scope="col">Membership Level</th>
+                    <th scope="col">MemberID<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Wifi Password<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Phone<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">BirthDate<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Full Name<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Membership Point<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Membership Level<span class="indicator"></span></th><span class="indicator"></span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -435,11 +442,11 @@ if(isset($_POST['docsub1']))
               <table class="table table-hover">
                 <thead>
                   <tr>
-                    <th scope="col">BeverageID</th>
-                    <th scope="col">Beverage Name</th>
-                    <th scope="col">Beverage Group</th>
-                    <th scope="col">Beverage Size</th>
-                    <th scope="col">Beverage price</th>
+                    <th scope="col">BeverageID<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Beverage Name<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Beverage Group<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Beverage Size<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Beverage price<span class="indicator"></span></th><span class="indicator"></span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -484,18 +491,18 @@ if(isset($_POST['docsub1']))
               <table class="table table-hover">
                 <thead>
                   <tr>
-                  <th scope="col">Order ID</th>
-                  <th scope="col">Customer ID</th>
-                    <th scope="col">First Name</th>
-                    <th scope="col">Last Name</th>
-                    <th scope="col">Gender</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Contact</th>
-                    <th scope="col">Staff Name</th>
-                    <th scope="col">Consultancy Fees</th>
-                    <th scope="col">Appointment Date</th>
-                    <th scope="col">Appointment Time</th>
-                    <th scope="col">Appointment Status</th>
+                  <th scope="col">Order ID<span class="indicator"></span></th><span class="indicator"></span></th>
+                  <th scope="col">Customer ID<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">First Name<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Last Name<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Gender<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Email<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Contact<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Staff Name<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Consultancy Fees<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Appointment Date<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Appointment Time<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Appointment Status<span class="indicator"></span></th><span class="indicator"></span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -574,20 +581,69 @@ if(isset($_POST['docsub1']))
         </form>
       </div>
 
-      <div class="tab-pane fade" id="list-settings1" role="tabpanel" aria-labelledby="list-settings1-list">
-        <form class="form-group" method="post" action="admin-panel1.php">
-          <div class="row">
-          
-                  <div class="col-md-4"><label>Email ID:</label></div>
-                  <div class="col-md-8"><input type="email"  class="form-control" name="demail" required></div><br><br>
-                  
-                </div>
-          <input type="submit" name="docsub1" value="Delete Staff" class="btn btn-primary" onclick="confirm('do you really want to delete?')">
-        </form>
-      </div>
+     <div class="tab-pane fade" id="list-settings1" role="tabpanel" aria-labelledby="list-settings1-list">
+                <form class="form-group" method="post" action="">
+                    <div class="row">
+                        <div class="col-md-4"><label>Start Date:</label></div>
+                        <div class="col-md-8"><input type="date" class="form-control" name="start_date" required></div><br><br>
+                        <div class="col-md-4"><label>End Date:</label></div>
+                        <div class="col-md-8"><input type="date" class="form-control" name="end_date" required></div><br><br>
+                    </div>
+                    <input type="submit" name="salerp" value="Get Sales Report" class="btn btn-primary" onclick="return confirm('Do you really want to generate the report?');">
+                </form>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <?php
+            if (isset($_POST['salerp'])) {
+                $host = 'localhost';
+                $user = 'root';
+                $password = '';
+                $dbname = 'coffeeshop';
 
+                $conn = new mysqli($host, $user, $password, $dbname);
+                if ($conn->connect_error) {
+                    die("Connection failed: " . $conn->connect_error);
+                }
 
-       <div class="tab-pane fade" id="list-attend" role="tabpanel" aria-labelledby="list-attend-list">...</div>
+                $start_date = $_POST['start_date'];
+                $end_date = $_POST['end_date'];
+
+                $stmt = $conn->prepare("CALL GenerateSalesReport(?, ?)");
+                $stmt->bind_param("ss", $start_date, $end_date);
+                $stmt->execute();
+
+                do {
+                    if ($result = $stmt->get_result()) {
+                        echo "<table class='table'>";
+                        echo "<thead><tr>";
+                        foreach ($result->fetch_fields() as $field) {
+                            echo "<th>" . htmlspecialchars($field->name) . "</th>";
+                        }
+                        echo "</tr></thead><tbody>";
+
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>";
+                            foreach ($row as $value) {
+                                echo "<td>" . htmlspecialchars($value) . "</td>";
+                            }
+                            echo "</tr>";
+                        }
+                        echo "</tbody></table>";
+                        $result->free();
+                    }
+                } while ($stmt->more_results() && $stmt->next_result());
+
+                $stmt->close();
+                $conn->close();
+            }
+            ?>
+        </div>
+        </div>
+    </div>
+</div>
+
+      <div class="tab-pane fade" id="list-attend" role="tabpanel" aria-labelledby="list-attend-list">...</div>
 
        <div class="tab-pane fade" id="list-mes" role="tabpanel" aria-labelledby="list-mes-list">
 
@@ -602,10 +658,10 @@ if(isset($_POST['docsub1']))
               <table class="table table-hover">
                 <thead>
                   <tr>
-                    <th scope="col">User Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Contact</th>
-                    <th scope="col">Message</th>
+                    <th scope="col">User Name<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Email<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Contact<span class="indicator"></span></th><span class="indicator"></span></th>
+                    <th scope="col">Message<span class="indicator"></span></th><span class="indicator"></span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -644,42 +700,55 @@ if(isset($_POST['docsub1']))
     <!-- Optional JavaScript -->
     <!-- Including jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <style>
+        th {
+            cursor: pointer;
+            position: relative; /* Needed to position the indicator */
+        }
+        .indicator {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    </style>
     <!-- Sorting Script -->
     <script>
     $(document).ready(function(){
-      function sortTable(table, columnIndex, ascending) {
-        var rows = table.find('tbody tr').get();
-        rows.sort(function(a, b) {
-          var A = $(a).children('td').eq(columnIndex).text().toUpperCase();
-          var B = $(b).children('td').eq(columnIndex).text().toUpperCase();
-          if (ascending) {
-            if(A < B) return -1;
-            if(A > B) return 1;
-          } else {
-            if(A < B) return 1;
-            if(A > B) return -1;
-          }
-          return 0;
-        });
-        $.each(rows, function(index, row) {
-          table.children('tbody').append(row);
-        });
-      }
-
-      // Event listener for table headers
-      $('th').click(function(){
-        var table = $(this).closest('table');
-        var columnIndex = $(this).index();
-        var ascending = $(this).hasClass('asc');
-        table.find('th').removeClass('asc desc');
-        if (ascending) {
-          $(this).addClass('desc');
-        } else {
-          $(this).addClass('asc');
+        function sortTable(table, columnIndex, ascending) {
+            var rows = table.find('tbody tr').get();
+            rows.sort(function(a, b) {
+                var A = $(a).children('td').eq(columnIndex).text().toUpperCase();
+                var B = $(b).children('td').eq(columnIndex).text().toUpperCase();
+                if (ascending) {
+                    if(A < B) return -1;
+                    if(A > B) return 1;
+                } else {
+                    if(A < B) return 1;
+                    if(A > B) return -1;
+                }
+                return 0;
+            });
+            $.each(rows, function(index, row) {
+                table.children('tbody').append(row);
+            });
         }
-        sortTable(table, columnIndex, !ascending);
-      });
+
+        $('th').click(function(){
+            var table = $(this).closest('table');
+            var columnIndex = $(this).index();
+            var ascending = $(this).hasClass('asc');
+            table.find('th').removeClass('asc desc');
+            $(this).children('.indicator').empty();
+            if (ascending) {
+                $(this).addClass('desc');
+                $(this).children('.indicator').html('<?php echo sortIndicator(false); ?>');
+            } else {
+                $(this).addClass('asc');
+                $(this).children('.indicator').html('<?php echo sortIndicator(true); ?>');
+            }
+            sortTable(table, columnIndex, !ascending);
+        });
     });
     </script>
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
